@@ -17,7 +17,7 @@
 class Register {
   public:
     Register() : key_n_(0) {}
-    ~Register();
+    ~Register() {}
 
     void append(const std::string& string);
 

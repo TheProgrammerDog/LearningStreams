@@ -29,17 +29,23 @@ void Register::append(const std::string& string) {
       auto num = std::make_unique<int>(std::stoi(aux)); // unique_ptr
       auto byte = std::make_unique<char>(); // unique_ptr
       std::memcpy(byte.get(), num.get(), sizeof(int));
-      bytes.push_back(byte);
+      bytes.push_back(std::move(byte));
     }
     else if (std::regex_match(aux, match, fractional)) {
       auto num = std::make_unique<int>(std::stof(aux)); // unique_ptr
       auto byte = std::make_unique<char>(); // unique_ptr
       std::memcpy(byte.get(), num.get(), sizeof(int));
-      bytes.push_back(byte);
+      bytes.push_back(std::move(byte));
     }
     else {
-      
+      for (auto iter : aux) {
+        auto schar = std::make_unique<char>(iter);
+        bytes.push_back(std::move(schar));
+      }
     }
+  }
+  for (auto iter = bytes.begin(); iter != bytes.end(); ++iter) {
+    std::cout << (iter->get()) << std::endl;
   }
   // not finished
 }
