@@ -12,17 +12,22 @@
 
 #include <iostream>
 #include <fstream>
+#include <map>
 
 class Register {
   public:
-    Register();
-    Register(const long long int& data);
+    Register() : key_n_(0) {}
     ~Register();
 
+    void append(const std::string& string);
+
     friend std::ostream& operator<<(std::ostream& os, const Register& reg);
-    friend std::ofstream& operator<<(std::ofstream& of, const Register& reg);
+    friend std::ofstream& operator<<(std::ofstream& ofs, const Register& reg);
+    friend std::ifstream& operator>>(std::ifstream& ifs, Register& reg);
   
-    long long int* data_;
+    private:
+      std::map<int, char*> table_;
+      unsigned key_n_;
 };
 
 #endif

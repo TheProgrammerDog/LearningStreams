@@ -8,36 +8,38 @@
  */
 
 #include "Register/register.hpp"
-#include <iostream>
-#include <fstream>
 #include <iomanip>
+#include <regex>
 #include <exception>
+#include <vector>
+#include <sstream>
+#include <memory>
+#include <cstring>
 
-Register::Register() {
-  data_ = nullptr;
-}
+void Register::append(const std::string& string) {
+  const std::regex integer("\\-?\\d+");
+  const std::regex fractional("\\-?\\d+\\.\\d+");
 
-Register::Register(const long long int& data) {
-  try {
-    data_ = new long long int(data);
+  std::istringstream sstream(string);
+  std::vector<std::unique_ptr<char>> bytes;
+  std::string aux;
+  while (sstream >> aux) {
+    std::smatch match;
+    if (std::regex_match(aux, match, integer)) {
+      auto num = std::make_unique<int>(std::stoi(aux)); // unique_ptr
+      auto byte = std::make_unique<char>(); // unique_ptr
+      std::memcpy(byte.get(), num.get(), sizeof(int));
+      bytes.push_back(byte);
+    }
+    else if (std::regex_match(aux, match, fractional)) {
+      auto num = std::make_unique<int>(std::stof(aux)); // unique_ptr
+      auto byte = std::make_unique<char>(); // unique_ptr
+      std::memcpy(byte.get(), num.get(), sizeof(int));
+      bytes.push_back(byte);
+    }
+    else {
+      
+    }
   }
-  catch(std::bad_alloc& e) {
-    std::cerr << e.what() << std::endl;
-    data_ = nullptr;
-  }
-}
-
-Register::~Register() {
-  delete data_;
-}
-
-std::ostream& operator<<(std::ostream& os, const Register& reg) {
-  os << std::left << std::setw(20) << *reg.data_ << reg.data_;
-  os << std::resetiosflags(std::ios::adjustfield) << std::setw(0);
-  return os;
-}
-
-std::ofstream& operator<<(std::ofstream& of, const Register& reg) {
-  of.write(reinterpret_cast<const char*>(reg.data_), sizeof(reg.data_));
-  return of;
+  // not finished
 }
