@@ -17,11 +17,16 @@
  *
  */
 void Register::append(const std::string& string, const priority& prior) {
+  const std::regex rflo("^(\\-?\\d+.\\d+)$");
   std::istringstream stream(string);
   std::string aux;
   std::vector<std::string> vector;
   while (stream >> aux) {
-    vector.push_back(aux);
+    std::smatch match;
+    if (std::regex_match(aux, match, rflo)) {
+      aux = std::to_string(std::stof(match[1]));
+    }
+    vector.push_back(aux); 
   }
   prior_table_.insert(std::make_pair(prior, vector));
 }
