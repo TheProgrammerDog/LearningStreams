@@ -1,13 +1,17 @@
 #include "Register/register.hpp"
 #include <iostream>
+#include <fstream>
 
 int main(int argc, char** argv) {
-  Register reg;
+  float a = 2.5;
+  std::ofstream file_out ("out");
   
-  reg.append("perro el gato", priority::Medium);
-  reg.append("el gato a", priority::High);
-  reg.append("a", priority::Medium);
-  reg.append("sjsjsjs", priority::Low);
-  std::cout << reg;
+  Register reg;
+  //reg.append("el perro cosa", priority::Low);
+  //reg.append("el gato no", priority::Medium);
+  reg.append("El perro 2.3", priority::High);
+  reg.append("La gata loca 100", priority::Medium);
+  reg.write(file_out);
+
   return 0;
 }

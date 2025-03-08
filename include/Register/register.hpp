@@ -15,6 +15,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <bitset>
 
 enum class priority {
   High,
@@ -22,7 +23,12 @@ enum class priority {
   Low
 };
 
-std::string priority_to_string(const priority& prior);
+const char LOW = 0x01;
+const char MEDIUM = 0x02;
+const char HIGH = 0x03;
+const char INT = 0x04;
+const char FLOAT = 0x05;
+const char SEPARATOR = 0x06;
 
 class Register {
   public:
@@ -31,9 +37,13 @@ class Register {
 
     void append(const std::string& string, const priority& prior);
 
-    friend std::ostream& operator<<(std::ostream& os, const Register& reg);
-    friend std::ofstream& operator<<(std::ofstream& ofs, const Register& reg);
-    friend std::ifstream& operator>>(std::ifstream& ifs, Register& reg);
+    //friend std::ostream& operator<<(std::ostream& os, const Register& reg);
+    //friend std::ofstream& operator<<(std::ofstream& ofs, const Register& reg);
+    //friend std::ifstream& operator>>(std::ifstream& ifs, Register& reg);
+
+    std::ostream& print(std::ostream& os, std::bitset<3> flags) const;
+    
+    std::ofstream& write(std::ofstream& ofs) const;
   
     private:
       std::multimap<priority, std::vector<std::string>> prior_table_;
@@ -41,6 +51,8 @@ class Register {
       std::ostream& print_High(std::ostream& os) const;
       std::ostream& print_Medium(std::ostream& os) const;
       std::ostream& print_Low(std::ostream& os) const;
+
+      std::ofstream& write_byte(std::ofstream& ofs, const std::string& a) const;
 };
 
 #endif
