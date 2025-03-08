@@ -108,14 +108,12 @@ std::ofstream& Register::write_byte(std::ofstream& ofs, const std::string& a) co
 
   std::smatch match;
   if (std::regex_match(a, match, rint)) {
-    std::cout << "is a int" << std::endl;
     int num = std::stoi(match[1]);
     ofs << INT;
     ofs.write(reinterpret_cast<char*>(&num), sizeof(num));
 
   }
   else if (std::regex_match(a, match, rflo)) {
-    std::cout << "is a float" << std::endl;
     float num = std::stof(match[1]);
     ofs << FLOAT;
     ofs.write(reinterpret_cast<char*>(&num), sizeof(num));
@@ -126,4 +124,70 @@ std::ofstream& Register::write_byte(std::ofstream& ofs, const std::string& a) co
     }
   }
   return ofs;
+}
+
+std::ifstream& Register::read(std::ifstream& ifs) {
+  std::vector<std::string> vector;
+  std::string string;
+  char byte;
+  priority prior;
+
+  int num_int;
+  float num_float;
+  while (ifs.get(byte)) {
+    switch(byte) {
+      case 0x01: // priority LOW, new entry
+        if (mount_entry(vector, string)) { // if is not empty
+          prior_table_.insert(std::make_pair(prior, vector));
+        }
+        prior = priority::Low;
+        string.clear();
+        vector.clear();
+      break;
+      case 0x02: // priority MEDIUM, new entry
+        if (mount_entry(vector, string)) { // if is not empty
+          prior_table_.insert(std::make_pair(prior, vector));
+        }
+        prior = priority::Medium;
+        string.clear();
+        vector.clear();
+      break;
+      case 0x03: // priority HIGH, new entry
+        if (mount_entry(vector, string)) { // if is not empty
+          prior_table_.insert(std::make_pair(prior, vector));
+        }
+        prior = priority::High;
+        string.clear();
+        vector.clear();
+      break;
+      case 0x04: // next 4 char are a int
+        ifs.read(reinterpret_cast<char*>(&num_int), sizeof(int));
+        string = std::to_string(num_int);
+      break;
+      case 0x05: // next 4 char are a float
+        ifs.read(reinterpret_cast<char*>(&num_float), sizeof(float));
+        string = std::to_string(num_float);
+      break;
+      case 0x06: // string separator
+        vector.push_back(string);
+        string.clear();
+      break; 
+      default: // normal character
+        string.push_back(byte);
+    }
+  }
+  if(mount_entry(vector, string)) {
+    prior_table_.insert(std::make_pair(prior, vector));
+  }
+  return ifs;
+}
+
+bool Register::mount_entry(std::vector<std::string>& vector, const std::string& last) const {
+  if (last.size() != 0) {
+    vector.push_back(last);
+  }
+  if (vector.size() != 0) {
+    return true;
+  }
+  return false;
 }

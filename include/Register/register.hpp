@@ -50,6 +50,8 @@ class Register {
       std::ostream& print_Low(std::ostream& os) const;
 
       std::ofstream& write_byte(std::ofstream& ofs, const std::string& a) const;
+
+      bool mount_entry(std::vector<std::string>& vector, const std::string& last) const;
 };
 
 #endif
