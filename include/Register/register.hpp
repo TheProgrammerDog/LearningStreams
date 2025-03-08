@@ -37,13 +37,10 @@ class Register {
 
     void append(const std::string& string, const priority& prior);
 
-    //friend std::ostream& operator<<(std::ostream& os, const Register& reg);
-    //friend std::ofstream& operator<<(std::ofstream& ofs, const Register& reg);
-    //friend std::ifstream& operator>>(std::ifstream& ifs, Register& reg);
-
     std::ostream& print(std::ostream& os, std::bitset<3> flags) const;
     
     std::ofstream& write(std::ofstream& ofs) const;
+    std::ifstream& read(std::ifstream& ifs);
   
     private:
       std::multimap<priority, std::vector<std::string>> prior_table_;
